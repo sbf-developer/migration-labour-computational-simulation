@@ -222,7 +222,7 @@ def fig_m0_m6_comparison(ladder: pd.DataFrame) -> None:
     ax.set_xticklabels(labels)
     ax.set_ylabel("Short-run outcome (0--2 yr after shock)")
     ax.legend(frameon=True, fontsize=8, loc="upper left")
-    ax.set_title("M0 vs M6: wages rise under full GE; M0 shows severe congestion")
+    ax.set_title("M0 vs M6: congestion under fixed margins; index higher under full GE")
     fig.tight_layout()
     fig.savefig(FIGURES_DIR / "fig7_m0_m6_comparison.pdf")
     fig.savefig(FIGURES_DIR / "fig7_m0_m6_comparison.png")

@@ -21,7 +21,7 @@
   From Labour-Supply Shock to Economic Adjustment:\\
   A Stylised Agent-Based Model of Immigration, Wages, and Firm Dynamics}
 
-\author{Scott Brodie Forsyth\\[0.5em]\small Independent Researcher}
+\author{Scott Brodie Forsyth}
 \date{July 2026}
 
 \begin{document}
@@ -71,7 +71,7 @@ Seven nested specifications (\emph{M0}--\emph{M6}) activate mechanisms sequentia
 Counterfactual immigration shocks vary in size, skill composition, substitutability, and macroeconomic state.
 Outcomes are reported by skill group and time horizon (0--2, 3--7, and 8--12 years).
 
-Parameters are chosen to reproduce stylised moments consistent with high-income OECD labour markets \citep{borjas2016,dustmann2013,peri2016}, not to replicate any single country's administrative data.
+Parameters are informed by stylised moments from the immigration and labour-market literature \citep{borjas2016,dustmann2013,peri2016}, not fitted to replicate any single country's administrative data; simulated burn-in moments can diverge from listed targets (Table~\ref{tab:calibration_fit}).
 The model is a \emph{computational laboratory}: an artificial economy in which mechanisms can be switched on or off to diagnose comparative statics.
 
 Section~\ref{sec:background} summarises evidence.
@@ -234,9 +234,8 @@ The incremental contribution of mechanism $k$ is $\Delta \bar{w}^{\text{M}_k} - 
 \subsection{Calibration targets}
 
 Table~\ref{tab:calibration} lists stylised calibration targets informed by published immigration and labour-market research.
-Parameters not directly identified are set by simulated-method-of-moments logic to approximate burn-in moments.
-Table~\ref{tab:calibration_fit} compares targets to simulated pre-shock moments under \emph{M6}: several moments---notably native employment and the native/migrant wage ratio---deviate from the listed targets.
-The artificial economy is therefore stylised rather than tightly identified; counterfactual comparisons across mechanism levels remain internally valid, but levels should not be read as calibrated to any observed economy.
+Parameters not directly identified are set heuristically with reference to Table~\ref{tab:calibration}; fit to burn-in is incomplete (Table~\ref{tab:calibration_fit}).
+The artificial economy is stylised rather than tightly identified: counterfactual comparisons across mechanism levels are internally valid, but simulated levels should not be read as calibrated to any observed economy.
 Hold-out validation against observed historical shocks is reserved for future work (Section~\ref{sec:limits}).
 
 \begin{table}[htbp]
@@ -302,7 +301,7 @@ By \emph{M6}, the short-run wage-index effect is positive (\MSixShortWage{} pp) 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.88\textwidth]{../figures/fig7_m0_m6_comparison.pdf}
-  \caption{M0 vs.\ M6: short-run wage-index change, native employment, and unemployment after a 5\% shock. Under fixed margins (\emph{M0}), congestion dominates; under full adjustment (\emph{M6}), wages rise while employment remains high in the short run but drifts down over time (Figure~\ref{fig:paths}).}
+  \caption{M0 vs.\ M6: short-run wage-index change, native employment, and unemployment after a 5\% shock. Under fixed margins (\emph{M0}), congestion dominates; under full adjustment (\emph{M6}), the wage index is higher in the short run while native employment drifts down over time (Figure~\ref{fig:paths}).}
   \label{fig:m0m6}
 \end{figure}
 
@@ -350,7 +349,7 @@ Under \emph{M6}, short-run native wage-index \emph{levels} (normalised index, no
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.72\textwidth]{../figures/fig6_skill_heterogeneity.pdf}
-  \caption{Native wage-index \emph{levels} by skill tier, short run (0--2 years), \emph{M6}, 5\% shock ($N=\NReplicates{}$).}
+  \caption{Native wage-index \emph{levels} by skill tier, short run (0--2 years), \emph{M6}, 5\% shock (mechanism-ladder sample, $N=\NReplicates{}$ per replicate set).}
   \label{fig:skill}
 \end{figure}
 
@@ -387,7 +386,7 @@ Under \emph{M6}, short-run native wage-index \emph{levels} (normalised index, no
 
 \textbf{What this study can say.}
 \begin{enumerate}[label=(\roman*), nosep]
-  \item In a transparent artificial economy with stylised calibration, shutting down general-equilibrium margins yields negligible short-run wage-index changes but severe unemployment under \emph{M0}; activating demand, firm entry, and innovation can reverse the wage sign while employment dynamics remain mixed.
+  \item In a transparent artificial economy with stylised calibration, shutting down general-equilibrium margins yields negligible short-run wage-index changes but severe unemployment under \emph{M0}; activating demand and firm entry can reverse the wage-index sign in this parameterisation while employment dynamics remain mixed.
   \item Mechanism decomposition shows which \emph{switches} move the employed-native wage index in this artificial economy; it does not identify which margins dominate in real labour markets \citep{borjas2016,cadenakovak2016,albert2021}.
   \item Distributional predictions---a persistent skill gradient in native wage levels---are stable across replicates; differential effects by inflow skill mix are small under \emph{M6} in the current parameterisation.
 \end{enumerate}
@@ -444,7 +443,7 @@ All numerical values in Tables~\ref{tab:results}--\ref{tab:hypotheses} and the a
 \section{ODD protocol summary}
 \label{app:odd}
 
-\textbf{Purpose.} Diagnose mechanism dependence of immigration wage effects.
+\textbf{Purpose.} Diagnose how mechanism switches affect native employment and the employed-native wage index in an artificial economy (not causal inference for a real country).
 
 \textbf{Entities.} Workers, firms, implicit households.
 
@@ -454,7 +453,7 @@ All numerical values in Tables~\ref{tab:results}--\ref{tab:hypotheses} and the a
 
 \textbf{Design concepts.} Emergence of vacancy chains; adaptation via entry and innovation; stochastic matching.
 
-\textbf{Initialization.} Stylised employment and wage gaps from \texttt{data/calibration\_targets.json}.
+\textbf{Initialization.} Parameters informed by stylised targets in \texttt{data/calibration\_targets.json}; simulated pre-shock moments under \emph{M6} need not match those targets (Table~\ref{tab:calibration_fit}).
 
 \textbf{Submodels.} Equations~\eqref{eq:production}--\eqref{eq:entry}; search protocol in Section~\ref{sec:model}.
 
