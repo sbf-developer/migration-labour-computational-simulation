@@ -1,0 +1,34 @@
+{
+  "description": "Denmark-inspired calibration targets from published aggregate statistics. Values are stylised moments for simulated method of moments; they are not microdata extracts.",
+  "sources": [
+    "Statistics Denmark (2023): employment rates by origin, international wage earners",
+    "Ministry of Immigration and Integration (2025): International Migration – Denmark",
+    "CBS/OECD cross-country wage-gap study (2024): immigrant-native earnings",
+    "OECD International Migration Outlook (2024): migrant entrepreneurship"
+  ],
+  "moments": {
+    "employment_rate_native": 0.815,
+    "employment_rate_migrant": 0.670,
+    "unemployment_rate": 0.051,
+    "migrant_share_labor_force": 0.12,
+    "native_migrant_wage_ratio": 1.12,
+    "self_employment_rate_migrant": 0.09,
+    "self_employment_rate_native": 0.05,
+    "firm_entry_rate_annual": 0.08,
+    "firm_exit_rate_annual": 0.06,
+    "vacancy_rate": 0.025,
+    "job_finding_rate_quarterly": 0.45,
+    "separation_rate_quarterly": 0.03,
+    "remittance_share_migrant_income": 0.05,
+    "occupational_downgrade_prob_migrant": 0.35,
+    "consumption_share_low_skill_sector": 0.28,
+    "consumption_share_mid_skill_sector": 0.42,
+    "consumption_share_high_skill_sector": 0.30,
+    "housing_cost_share_income": 0.22
+  },
+  "validation_holdout": {
+    "note": "These moments are not used in calibration; reserved for qualitative validation only in this computational exercise.",
+    "regional_wage_dispersion_cv": 0.08,
+    "sectoral_employment_shift_post_shock_direction": "demand-sensitive"
+  }
+}
