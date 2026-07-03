@@ -3,5 +3,9 @@
   "m0_short_wage_change_pct": -0.050172326657403635,
   "m6_short_wage_change_pct": 2.3216953547787877,
   "m0_long_wage_change_pct": -0.33680201300115153,
-  "m6_long_wage_change_pct": 6.413691925257468
+  "m6_long_wage_change_pct": 6.413691925257468,
+  "m0_native_employment_short": 0.4522848484848485,
+  "m6_native_employment_short": 0.9271424242424241,
+  "m0_unemployment_short": 0.5692977777777778,
+  "m6_unemployment_short": 0.07855238095238092
 }

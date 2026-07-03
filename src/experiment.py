@@ -192,6 +192,15 @@ def write_latex_stats(df: pd.DataFrame, decomp: pd.DataFrame) -> None:
     m6_long = main[main["mechanism_level"] == 6]["native_wage_change_long"].mean()
     m6_low = main[main["mechanism_level"] == 6]["native_wage_skill_0_short"].mean()
     m6_high = main[main["mechanism_level"] == 6]["native_wage_skill_2_short"].mean()
+    m0_emp = main[main["mechanism_level"] == 0]["native_employment_short"].mean()
+    m6_emp = main[main["mechanism_level"] == 6]["native_employment_short"].mean()
+    m0_unemp = main[main["mechanism_level"] == 0]["unemployment_short"].mean()
+    m6_unemp = main[main["mechanism_level"] == 6]["unemployment_short"].mean()
+    m0_emp_se = main[main["mechanism_level"] == 0]["native_employment_short"].sem()
+    m6_emp_se = main[main["mechanism_level"] == 6]["native_employment_short"].sem()
+    m0_unemp_se = main[main["mechanism_level"] == 0]["unemployment_short"].sem()
+    m6_unemp_se = main[main["mechanism_level"] == 6]["unemployment_short"].sem()
+    m0_short_se = main[main["mechanism_level"] == 0]["native_wage_change_short"].sem()
 
     decomp_main = decomp[decomp["treatment"] == "shock_5pct_balanced"]
     demand_contrib = decomp_main[decomp_main["to_level"] == 1]["delta_wage_change_short"].mean()
@@ -211,6 +220,11 @@ def write_latex_stats(df: pd.DataFrame, decomp: pd.DataFrame) -> None:
         f"\\newcommand{{\\DemandContrib}}{{{demand_contrib:.2f}}}",
         f"\\newcommand{{\\EntryContrib}}{{{entry_contrib:.2f}}}",
         f"\\newcommand{{\\InnovContrib}}{{{innov_contrib:.2f}}}",
+        f"\\newcommand{{\\MZeroEmpShort}}{{{100 * m0_emp:.1f}}}",
+        f"\\newcommand{{\\MSixEmpShort}}{{{100 * m6_emp:.1f}}}",
+        f"\\newcommand{{\\MZeroUnempShort}}{{{100 * m0_unemp:.1f}}}",
+        f"\\newcommand{{\\MSixUnempShort}}{{{100 * m6_unemp:.1f}}}",
+        f"\\newcommand{{\\MZeroShortWageSE}}{{{1.96 * m0_short_se:.2f}}}",
     ]
     PAPER_DIR.mkdir(parents=True, exist_ok=True)
     (PAPER_DIR / "generated_stats.tex").write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -256,12 +270,65 @@ def write_latex_stats(df: pd.DataFrame, decomp: pd.DataFrame) -> None:
     )
     (PAPER_DIR / "generated_results_table.tex").write_text("\n".join(table_lines) + "\n", encoding="utf-8")
 
+    emp_agg = (
+        main.groupby("mechanism_level")
+        .agg(
+            emp_short=("native_employment_short", "mean"),
+            emp_short_se=("native_employment_short", "sem"),
+            unemp_short=("unemployment_short", "mean"),
+            unemp_short_se=("unemployment_short", "sem"),
+            emp_long=("native_employment_long", "mean"),
+            emp_long_se=("native_employment_long", "sem"),
+        )
+        .reset_index()
+    )
+    emp_lines = [
+        "% Auto-generated employment table",
+        "\\begin{table}[htbp]",
+        "  \\centering",
+        "  \\caption{Native employment and unemployment after a balanced 5\\% shock}",
+        "  \\label{tab:employment}",
+        "  \\small",
+        "  \\begin{tabular}{@{}lcccc@{}}",
+        "    \\toprule",
+        "    Model & Native emp.\\ (short) & Unemp.\\ (short) & Native emp.\\ (long) & Comment \\\\",
+        "    \\midrule",
+    ]
+    comments = {
+        0: "Severe congestion; fixed jobs",
+        1: "Demand restores matching",
+        6: "Wages up; employment drifts down over time",
+    }
+    for lvl in (0, 1, 6):
+        row = emp_agg[emp_agg["mechanism_level"] == lvl].iloc[0]
+        emp_lines.append(
+            f"    M{lvl} & {100 * row['emp_short']:.1f}\\% ({100 * 1.96 * row['emp_short_se']:.1f}) & "
+            f"{100 * row['unemp_short']:.1f}\\% ({100 * 1.96 * row['unemp_short_se']:.1f}) & "
+            f"{100 * row['emp_long']:.1f}\\% ({100 * 1.96 * row['emp_long_se']:.1f}) & "
+            f"{comments[lvl]} \\\\"
+        )
+    emp_lines.extend(
+        [
+            "    \\bottomrule",
+            "  \\end{tabular}",
+            "  \\begin{minipage}{0.92\\textwidth}",
+            "    \\small\\emph{Note:} Short run = years 0--2 after shock; long run = years 8--12. Unemployment is economy-wide. 95\\% replicate standard errors in parentheses.",
+            "  \\end{minipage}",
+            "\\end{table}",
+        ]
+    )
+    (PAPER_DIR / "generated_employment_table.tex").write_text("\n".join(emp_lines) + "\n", encoding="utf-8")
+
     summary = {
         "n_replicates": int(n_rep),
         "m0_short_wage_change_pct": float(m0_short),
         "m6_short_wage_change_pct": float(m6_short),
         "m0_long_wage_change_pct": float(m0_long),
         "m6_long_wage_change_pct": float(m6_long),
+        "m0_native_employment_short": float(m0_emp),
+        "m6_native_employment_short": float(m6_emp),
+        "m0_unemployment_short": float(m0_unemp),
+        "m6_unemployment_short": float(m6_unemp),
     }
     (RESULTS_DIR / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
 

@@ -89,17 +89,22 @@ def fig_schematic() -> None:
 def fig_mechanism_ladder(ladder: pd.DataFrame) -> None:
     _style()
     main = ladder[ladder["treatment"] == "shock_5pct_balanced"].copy()
-    main["mechanism"] = main["mechanism_level"].map(MECH_SHORT)
 
     agg = main.groupby("mechanism_level").agg(
         short=("native_wage_change_short", "mean"),
         long=("native_wage_change_long", "mean"),
         short_se=("native_wage_change_short", "sem"),
         long_se=("native_wage_change_long", "sem"),
+        emp_short=("native_employment_short", "mean"),
+        emp_short_se=("native_employment_short", "sem"),
+        unemp_short=("unemployment_short", "mean"),
+        unemp_short_se=("unemployment_short", "sem"),
     ).reset_index()
 
-    fig, ax = plt.subplots(figsize=(7, 4.5))
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
     x = agg["mechanism_level"]
+
+    ax = axes[0]
     ax.errorbar(x, agg["short"], yerr=1.96 * agg["short_se"], fmt="o-", capsize=3, label="Short run (0--2 yr)")
     ax.errorbar(x, agg["long"], yerr=1.96 * agg["long_se"], fmt="s--", capsize=3, label="Long run (8--12 yr)")
     ax.axhline(0, color="gray", lw=0.8, ls=":")
@@ -107,8 +112,28 @@ def fig_mechanism_ladder(ladder: pd.DataFrame) -> None:
     ax.set_xticklabels([MECH_SHORT[i] for i in range(7)])
     ax.set_xlabel("Mechanism level")
     ax.set_ylabel("Native wage-index change (\\%)")
-    ax.legend(frameon=True)
-    ax.set_title("Mechanism ladder: wage effects under nested model extensions")
+    ax.legend(frameon=True, fontsize=8)
+    ax.set_title("(a) Wage index")
+
+    ax = axes[1]
+    ax.errorbar(
+        x, agg["emp_short"], yerr=1.96 * agg["emp_short_se"],
+        fmt="o-", capsize=3, color="#2980b9", label="Native employment",
+    )
+    ax.errorbar(
+        x, agg["unemp_short"], yerr=1.96 * agg["unemp_short_se"],
+        fmt="s--", capsize=3, color="#c0392b", label="Unemployment (all workers)",
+    )
+    ax.set_xticks(range(7))
+    ax.set_xticklabels([MECH_SHORT[i] for i in range(7)])
+    ax.set_xlabel("Mechanism level")
+    ax.set_ylabel("Rate (short run, 0--2 yr)")
+    ax.set_ylim(0, 1.05)
+    ax.legend(frameon=True, fontsize=8)
+    ax.set_title("(b) Employment and unemployment")
+
+    fig.suptitle("Mechanism ladder: wages vs. labour-market congestion", y=1.03)
+    fig.tight_layout()
     fig.savefig(FIGURES_DIR / "fig2_mechanism_ladder.pdf")
     fig.savefig(FIGURES_DIR / "fig2_mechanism_ladder.png")
     plt.close(fig)
@@ -140,23 +165,17 @@ def fig_decomposition(decomp: pd.DataFrame) -> None:
 def fig_time_paths(ts: pd.DataFrame) -> None:
     _style()
     shock_year = 10
-    agg = ts.groupby("year").agg(
-        wage=("native_wage", "mean"),
-        employment=("native_employment", "mean"),
-        output=("output_per_capita", "mean"),
-        vacancies=("vacancy_rate", "mean"),
-    ).reset_index()
-
     fig, axes = plt.subplots(2, 2, figsize=(9, 6), sharex=True)
     wage_col = "native_wage_index_change_pct" if "native_wage_index_change_pct" in ts.columns else "native_wage_change_pct"
     panels = [
         (wage_col, "Native wage-index change (\\%)", axes[0, 0]),
         ("native_employment", "Native employment rate", axes[0, 1]),
-        ("output_per_capita", "Output per capita", axes[1, 0]),
-        ("vacancy_rate", "Vacancy rate", axes[1, 1]),
+        ("unemployment_rate", "Unemployment rate (all workers)", axes[1, 0]),
+        ("output_per_capita", "Output per capita", axes[1, 1]),
     ]
     for col, title, ax in panels:
         sub = ts.groupby("year")[col].agg(["mean", "sem"]).reset_index()
+        sub = sub.dropna(subset=["mean"])
         ax.plot(sub["year"], sub["mean"], lw=2)
         ax.fill_between(
             sub["year"],
@@ -175,25 +194,73 @@ def fig_time_paths(ts: pd.DataFrame) -> None:
     plt.close(fig)
 
 
+def fig_m0_m6_comparison(ladder: pd.DataFrame) -> None:
+    """Side-by-side M0 vs M6: wages, native employment, unemployment."""
+    _style()
+    main = ladder[
+        (ladder["treatment"] == "shock_5pct_balanced") & (ladder["mechanism_level"].isin([0, 6]))
+    ]
+    metrics = [
+        ("native_wage_change_short", "Wage-index change (\\%)"),
+        ("native_employment_short", "Native employment rate"),
+        ("unemployment_short", "Unemployment rate"),
+    ]
+    labels = ["M0\n(labour only)", "M6\n(full model)"]
+    x = np.arange(2)
+    width = 0.22
+    colors = ["#3498db", "#27ae60", "#e74c3c"]
+
+    fig, ax = plt.subplots(figsize=(7, 4.5))
+    for i, (col, ylab) in enumerate(metrics):
+        means = [main[main["mechanism_level"] == lvl][col].mean() for lvl in (0, 6)]
+        ses = [main[main["mechanism_level"] == lvl][col].sem() for lvl in (0, 6)]
+        offset = (i - 1) * width
+        ax.bar(x + offset, means, width, yerr=[1.96 * s for s in ses], capsize=3, label=ylab, color=colors[i], alpha=0.85)
+
+    ax.axhline(0, color="gray", lw=0.8)
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels)
+    ax.set_ylabel("Short-run outcome (0--2 yr after shock)")
+    ax.legend(frameon=True, fontsize=8, loc="upper left")
+    ax.set_title("M0 vs M6: wages rise under full GE; M0 shows severe congestion")
+    fig.tight_layout()
+    fig.savefig(FIGURES_DIR / "fig7_m0_m6_comparison.pdf")
+    fig.savefig(FIGURES_DIR / "fig7_m0_m6_comparison.png")
+    plt.close(fig)
+
+
 def fig_treatment_heterogeneity(treatments: pd.DataFrame) -> None:
     _style()
     agg = treatments.groupby("treatment").agg(
         short=("native_wage_change_short", "mean"),
-        se=("native_wage_change_short", "sem"),
+        short_se=("native_wage_change_short", "sem"),
+        unemp=("unemployment_short", "mean"),
+        unemp_se=("unemployment_short", "sem"),
     ).reset_index()
     label_map = {k: v.label.replace("\\%", "%") for k, v in __import__("config").TREATMENTS.items()}
     agg["label"] = agg["treatment"].map(label_map)
-
     agg = agg.sort_values("short")
-    fig, ax = plt.subplots(figsize=(8, 5))
+
+    fig, axes = plt.subplots(1, 2, figsize=(11, 5), sharey=True)
     y_pos = np.arange(len(agg))
-    ax.barh(y_pos, agg["short"], xerr=1.96 * agg["se"], color="#2980b9", alpha=0.85, capsize=3)
+
+    ax = axes[0]
+    ax.barh(y_pos, agg["short"], xerr=1.96 * agg["short_se"], color="#2980b9", alpha=0.85, capsize=3)
     ax.set_yticks(y_pos)
     ax.set_yticklabels(agg["label"])
     ax.axvline(0, color="gray", lw=0.8)
-    ax.set_xlabel("Short-run native wage change (\\%)")
-    ax.set_ylabel("")
-    ax.set_title("Treatment heterogeneity (full M6 model)")
+    ax.set_xlabel("Wage-index change (\\%)")
+    ax.set_title("(a) Wages (all scenarios positive, narrow range)")
+
+    ax = axes[1]
+    ax.barh(y_pos, agg["unemp"], xerr=1.96 * agg["unemp_se"], color="#c0392b", alpha=0.85, capsize=3)
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels([])
+    ax.set_xlabel("Unemployment rate")
+    ax.set_title("(b) Unemployment (limited scenario variation)")
+
+    fig.suptitle("Treatment heterogeneity under M6", y=1.02)
+    fig.tight_layout()
     fig.savefig(FIGURES_DIR / "fig5_treatments.pdf")
     fig.savefig(FIGURES_DIR / "fig5_treatments.png")
     plt.close(fig)
@@ -210,7 +277,7 @@ def fig_skill_heterogeneity(ladder: pd.DataFrame) -> None:
     fig, ax = plt.subplots(figsize=(6, 4))
     ax.bar(skills, means, yerr=[1.96 * s for s in ses], capsize=4, color=["#e74c3c", "#f39c12", "#2ecc71"])
     ax.set_ylabel("Native wage index (level, short run)")
-    ax.set_title("Skill gradient in native wages after 5\\% shock (M6)")
+    ax.set_title("Skill gradient: levels, not changes (M6, 5\\% shock)")
     fig.savefig(FIGURES_DIR / "fig6_skill_heterogeneity.pdf")
     fig.savefig(FIGURES_DIR / "fig6_skill_heterogeneity.png")
     plt.close(fig)
@@ -229,3 +296,4 @@ def generate_all_figures(
     fig_time_paths(ts)
     fig_treatment_heterogeneity(treatments)
     fig_skill_heterogeneity(ladder)
+    fig_m0_m6_comparison(ladder)

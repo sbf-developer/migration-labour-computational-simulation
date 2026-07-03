@@ -19,6 +19,7 @@ from experiment import (
 from viz import (
     fig_decomposition,
     fig_mechanism_ladder,
+    fig_m0_m6_comparison,
     fig_schematic,
     fig_skill_heterogeneity,
     fig_time_paths,
@@ -40,6 +41,7 @@ def main() -> None:
     fig_mechanism_ladder(ladder)
     fig_decomposition(decomp)
     fig_skill_heterogeneity(ladder)
+    fig_m0_m6_comparison(ladder)
     print("Core figures written.", flush=True)
 
     # Minimal treatment grid (10 replicates)
