@@ -1,9 +1,9 @@
 """
 Agent-based labour-market model with nested mechanism decomposition (M0--M6).
 
-The model is a stylised computational laboratory calibrated to Denmark-inspired
-aggregate moments from published statistics. It is not a literal replay of Danish
-administrative microdata.
+The model is a stylised computational laboratory: an artificial economy
+whose parameters are informed by broad patterns in the immigration literature,
+not a replay of any single country's data.
 """
 
 from __future__ import annotations

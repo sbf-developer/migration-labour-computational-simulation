@@ -1,9 +1,9 @@
 {
-  "description": "Denmark-inspired calibration targets from published aggregate statistics. Values are stylised moments for simulated method of moments; they are not microdata extracts.",
+  "description": "Stylised calibration targets for an artificial high-income economy. Values are literature-informed moments for simulated method of moments; they do not replicate any single country's administrative data.",
   "sources": [
-    "Statistics Denmark (2023): employment rates by origin, international wage earners",
-    "Ministry of Immigration and Integration (2025): International Migration – Denmark",
-    "CBS/OECD cross-country wage-gap study (2024): immigrant-native earnings",
+    "Borjas (2016): immigration wage literature survey",
+    "Dustmann, Frattini and Preston (2013): wage distribution effects",
+    "Peri (2016): immigrants, productivity, and labour markets",
     "OECD International Migration Outlook (2024): migrant entrepreneurship"
   ],
   "moments": {
@@ -27,7 +27,7 @@
     "housing_cost_share_income": 0.22
   },
   "validation_holdout": {
-    "note": "These moments are not used in calibration; reserved for qualitative validation only in this computational exercise.",
+    "note": "Reserved for future validation against observed historical shocks; not used in calibration.",
     "regional_wage_dispersion_cv": 0.08,
     "sectoral_employment_shift_post_shock_direction": "demand-sensitive"
   }

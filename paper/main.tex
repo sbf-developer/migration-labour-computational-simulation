@@ -19,7 +19,7 @@
 
 \title{%
   From Labour-Supply Shock to Economic Adjustment:\\
-  An Empirically Calibrated Agent-Based Model of Immigration, Wages, and Firm Dynamics}
+  A Stylised Agent-Based Model of Immigration, Wages, and Firm Dynamics}
 
 \author{Scott Brodie Forsyth\\[0.5em]\small Independent Researcher}
 \date{July 2026}
@@ -33,11 +33,11 @@
 \noindent
 Empirical studies disagree on whether immigration lowers native wages because they embed different adjustment margins: some hold job counts fixed, others allow product demand, firm creation, capital, occupational specialisation, and innovation to respond.
 This paper develops a structurally transparent agent-based labour-market model and nests seven specifications---from a pure labour-supply benchmark (\emph{M0}) to a full general-equilibrium model with innovation (\emph{M6})---to identify \emph{when}, \emph{through which mechanisms}, and \emph{for whom} immigration-induced supply shocks matter.
-Calibration targets Denmark-inspired aggregate moments from published statistics on employment gaps, wage differentials, and migrant self-employment \citep{dst2023international,imi2025denmark,cbs2024wagegap,oecd2024entrepreneurship}.
+Calibration uses stylised aggregate moments---employment gaps, wage differentials, and migrant self-employment rates---drawn from broad patterns reported in the OECD and immigration-literature \citep{borjas2016,dustmann2013,oecd2024entrepreneurship,peri2016}.
 A balanced 5\% labour-force shock is simulated with \NReplicates{} stochastic replicates per mechanism level.
 Under \emph{M0}, the short-run native wage index falls by \MZeroShortWage{} percentage points on average; under \emph{M6} it \emph{rises} by \MSixShortWage{} percentage points in the short run and \MSixLongWage{} percentage points in the long run (8--12 years).
 Mechanism decomposition attributes \DemandContrib{} percentage points of short-run change to activating local consumption demand (\emph{M0}$\rightarrow$\emph{M1}), \EntryContrib{} to firm entry (\emph{M1}$\rightarrow$\emph{M2}), and \InnovContrib{} to innovation (\emph{M5}$\rightarrow$\emph{M6}).
-The exercise does \emph{not} estimate a causal effect for Denmark; it shows that fixed-job and dynamic general-equilibrium thought experiments can be nested within one framework, and that the \emph{sign} of the average native wage effect depends critically on which margins are active and on the time horizon.
+The exercise does \emph{not} estimate a causal effect for any observed economy; it shows that fixed-job and dynamic general-equilibrium thought experiments can be nested within one framework, and that the \emph{sign} of the average native wage effect depends critically on which margins are active and on the time horizon.
 \end{abstract}
 
 \noindent\textbf{Keywords:} immigration; agent-based model; search and matching; firm dynamics; mechanism decomposition; general equilibrium
@@ -69,9 +69,8 @@ Seven nested specifications (\emph{M0}--\emph{M6}) activate mechanisms sequentia
 Counterfactual immigration shocks vary in size, skill composition, substitutability, and macroeconomic state.
 Outcomes are reported by skill group and time horizon (0--2, 3--7, and 8--12 years).
 
-Calibration targets Denmark-inspired moments from published aggregate statistics rather than confidential microdata.
-Denmark offers institutional transparency, a sizeable immigrant workforce (8.4\% of wage earners in the narrow international-worker definition; roughly 12\% in broader labour-force measures), documented employment and wage gaps, and active integration-policy debate \citep{dst2023international,imi2025denmark,cbs2024wagegap}.
-The model is a \emph{computational laboratory}: parameters reproduce stylised moments, not every feature of Danish administrative registers.
+Parameters are chosen to reproduce stylised moments consistent with high-income OECD labour markets \citep{borjas2016,dustmann2013,peri2016}, not to replicate any single country's administrative data.
+The model is a \emph{computational laboratory}: an artificial economy in which mechanisms can be switched on or off to diagnose comparative statics.
 
 Section~\ref{sec:background} summarises evidence.
 Section~\ref{sec:model} presents the model.
@@ -217,24 +216,23 @@ The incremental contribution of mechanism $k$ is $\Delta \bar{w}^{\text{M}_k} - 
 
 \subsection{Calibration targets}
 
-Table~\ref{tab:calibration} lists Denmark-inspired targets from published sources.
+Table~\ref{tab:calibration} lists stylised calibration targets informed by published immigration and labour-market research.
 Parameters not directly identified are set by simulated-method-of-moments logic to approximate burn-in moments.
-Hold-out validation (regional wage dispersion, historical shock replay) is reserved for future work with register data (Section~\ref{sec:limits}).
+Hold-out validation against observed historical shocks is reserved for future work (Section~\ref{sec:limits}).
 
 \begin{table}[htbp]
   \centering
-  \caption{Denmark-inspired calibration targets (published aggregate statistics)}
+  \caption{Stylised calibration targets (literature-informed)}
   \label{tab:calibration}
   \begin{tabular}{lll}
     \toprule
     Moment & Target & Source \\
     \midrule
-    Native employment rate (25--64) & 81.5\% & \citet{imi2025denmark} \\
-    Immigrant/descendant employment (non-Western) & 67.0\% & \citet{imi2025denmark} \\
-    International wage earners' share (18--64) & 8.4\% & \citet{dst2023international} \\
-    Median annual wage gap (international vs.\ other) & 12\% & \citet{dst2023international} \\
-    Immigrant--native earnings gap (Denmark, OECD) & 9.2\% & \citet{cbs2024wagegap} \\
-    Migrant self-employment (elevated vs.\ natives) & stylised & \citet{oecd2024entrepreneurship} \\
+    Native employment rate & 81.5\% & stylised OECD range \citep{borjas2016} \\
+    Migrant employment rate & 67.0\% & immigrant employment gap \citep{dustmann2013} \\
+    Migrant labour-force share & 12\% & stylised \citep{peri2016} \\
+    Native--migrant wage ratio & 1.12 & wage-gap literature \citep{dustmann2013,borjas2016} \\
+    Migrant self-employment (relative) & elevated & \citet{oecd2024entrepreneurship} \\
     Remittance share of migrant income & 5\% & literature benchmark \\
     \bottomrule
   \end{tabular}
@@ -339,15 +337,15 @@ Under \emph{M6}, short-run native wage \emph{levels} (not changes) average \LowS
 
 \textbf{What this study can say.}
 \begin{enumerate}[label=(\roman*), nosep]
-  \item In a transparent artificial economy calibrated to Denmark-inspired aggregate moments, shutting down general-equilibrium margins yields weakly negative short-run native wage-index effects; activating demand, firm entry, and innovation can \emph{reverse the sign}.
+  \item In a transparent artificial economy with stylised calibration, shutting down general-equilibrium margins yields weakly negative short-run native wage-index effects; activating demand, firm entry, and innovation can \emph{reverse the sign}.
   \item Mechanism decomposition quantifies which margins move outcomes, helping reconcile fixed-job empirics with dynamic spatial models \citep{borjas2016,cadenakovak2016,albert2021}.
   \item Distributional predictions---a persistent skill gradient in native wage levels---are stable across replicates; differential effects by inflow skill mix are small under \emph{M6} in the current parameterisation.
 \end{enumerate}
 
 \textbf{What this study cannot say.}
 \begin{enumerate}[label=(\roman*), nosep]
-  \item It does \emph{not} estimate the causal effect of immigration on Danish wages.
-  \item Positive long-run effects under \emph{M6} may partly reflect stylised demand and innovation parameters rather than empirical magnitudes for Denmark.
+  \item It does \emph{not} estimate the causal effect of immigration in any real economy.
+  \item Positive long-run effects under \emph{M6} may partly reflect stylised demand and innovation parameters rather than empirically identified magnitudes.
   \item Welfare institutions, collective bargaining, language policy, and housing supply are omitted.
   \item The model is not validated on a hold-out historical shock with pre-registered outcomes.
   \item Task specialisation (\emph{M4}) and migrant entrepreneurship (\emph{M5}) contribute negligibly to the aggregate wage index in this implementation; firm entry and demand activation dominate.
@@ -356,18 +354,18 @@ Under \emph{M6}, short-run native wage \emph{levels} (not changes) average \LowS
 
 \textbf{Policy interpretation.}
 Results caution against exporting partial-equilibrium wage estimates into long-run conclusions without stating which adjustment margins are inactive.
-They do \emph{not} license a blanket claim that immigration raises Danish wages; they show that such a conclusion requires explicit assumptions about demand, firm creation, and productivity.
+They do \emph{not} license a blanket claim that immigration raises wages in any specific country; they show that such a conclusion requires explicit assumptions about demand, firm creation, and productivity.
 
 \section{Conclusion}
 \label{sec:conclusion}
 
 Immigration economics produces different answers because the underlying thought experiments differ.
-This paper makes those differences explicit through a nested agent-based model calibrated to Denmark-inspired moments.
+This paper makes those differences explicit through a nested agent-based model in an artificial economy.
 When only labour supply expands (\emph{M0}), native wage indices fall slightly in the short run.
 When migrants consume locally, firms enter, capital adjusts, natives specialise, migrants entrepreneur, and innovation responds (\emph{M6}), the same shock can produce positive wage-index trajectories.
 
 The contribution is a map from structural assumptions to signed outcomes across horizons and worker types---not a single definitive sign on ``the'' immigration effect.
-Future work should embed Danish register data, validate on identified historical shocks, and conduct full sensitivity analysis at scale.
+Future work should embed microdata from a specific economy, validate on identified historical shocks, and conduct full sensitivity analysis at scale.
 
 \section*{Replication}
 \noindent
@@ -400,7 +398,7 @@ Compile with \texttt{pdflatex} and \texttt{bibtex} in \texttt{paper/}.
 
 \textbf{Design concepts.} Emergence of vacancy chains; adaptation via entry and innovation; stochastic matching.
 
-\textbf{Initialization.} Denmark-inspired employment and wage gaps from \texttt{data/calibration\_targets.json}.
+\textbf{Initialization.} Stylised employment and wage gaps from \texttt{data/calibration\_targets.json}.
 
 \textbf{Submodels.} Equations~\eqref{eq:production}--\eqref{eq:entry}; search protocol in Section~\ref{sec:model}.
 

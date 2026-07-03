@@ -1,4 +1,4 @@
-"""Model parameters and Denmark-inspired calibration targets."""
+"""Model parameters and stylised calibration targets."""
 
 from __future__ import annotations
 
@@ -111,7 +111,7 @@ def load_calibration_targets() -> dict:
 
 @dataclass
 class CalibratedParams:
-    """Parameters anchored to Denmark-inspired published moments."""
+    """Parameters anchored to stylised moments from the immigration literature."""
 
     wage_floor: float = 0.55
     productivity_baseline: float = 1.0
