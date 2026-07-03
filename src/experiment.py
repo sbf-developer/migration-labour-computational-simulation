@@ -263,7 +263,9 @@ def write_latex_stats(df: pd.DataFrame, decomp: pd.DataFrame) -> None:
             "    \\bottomrule",
             "  \\end{tabular}",
             "  \\begin{minipage}{0.92\\textwidth}",
-            "    \\small\\emph{Note:} Entries are mean native skill-wage-index changes (\\%) relative to the pre-shock baseline, with 95\\% replicate standard errors in parentheses. $N=\\NReplicates{}$ replicates per cell.",
+            "    \\small\\emph{Note:} Entries are mean changes in a native wage \\emph{index} (\\% relative to pre-shock baseline; Section~\\ref{sec:outcomes}), averaged across skill tiers.",
+            "    This index measures employed natives' wages only; it is not a labour-cost or economy-wide wage measure.",
+            "    95\\% replicate standard errors in parentheses. $N=\\NReplicates{}$ replicates per cell.",
             "  \\end{minipage}",
             "\\end{table}",
         ]
@@ -316,6 +318,8 @@ def write_latex_stats(df: pd.DataFrame, decomp: pd.DataFrame) -> None:
     )
     (PAPER_DIR / "generated_employment_table.tex").write_text("\n".join(emp_lines) + "\n", encoding="utf-8")
 
+    _write_calibration_fit_table()
+
     summary = {
         "n_replicates": int(n_rep),
         "m0_short_wage_change_pct": float(m0_short),
@@ -328,6 +332,57 @@ def write_latex_stats(df: pd.DataFrame, decomp: pd.DataFrame) -> None:
         "m6_unemployment_short": float(m6_unemp),
     }
     (RESULTS_DIR / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
+
+
+def _write_calibration_fit_table() -> None:
+    """Compare literature targets to simulated pre-shock moments (M6, t=9)."""
+    from config import load_calibration_targets
+
+    targets = load_calibration_targets()["moments"]
+    ts_path = RESULTS_DIR / "time_series_shock_5pct_balanced_M6.csv"
+    if ts_path.exists():
+        ts = pd.read_csv(ts_path)
+        pre = ts[ts["year"] == 9]
+        sim_native_emp = float(pre["native_employment"].mean())
+        sim_migrant_emp = float(pre["migrant_employment"].mean())
+        sim_unemp = float(pre["unemployment_rate"].mean())
+        sim_wage_ratio = float(pre["native_wage"].mean() / pre["migrant_wage"].mean())
+    else:
+        sim_native_emp = sim_migrant_emp = sim_unemp = sim_wage_ratio = float("nan")
+
+    rows = [
+        ("Native employment rate", targets["employment_rate_native"], sim_native_emp, "0.815"),
+        ("Migrant employment rate", targets["employment_rate_migrant"], sim_migrant_emp, "0.670"),
+        ("Economy-wide unemployment", targets["unemployment_rate"], sim_unemp, "0.051"),
+        ("Native/migrant wage ratio", targets["native_migrant_wage_ratio"], sim_wage_ratio, "1.12"),
+    ]
+    lines = [
+        "% Auto-generated calibration fit table",
+        "\\begin{table}[htbp]",
+        "  \\centering",
+        "  \\small",
+        "  \\caption{Calibration targets vs.\\ simulated pre-shock moments (\\emph{M6}, $t=9$, mean across replicates)}",
+        "  \\label{tab:calibration_fit}",
+        "  \\begin{tabular}{@{}lrr@{}}",
+        "    \\toprule",
+        "    Moment & Target & Simulated \\\\",
+        "    \\midrule",
+    ]
+    for label, target, sim, _ in rows:
+        sim_str = f"{sim:.3f}" if sim == sim else "---"
+        lines.append(f"    {label} & {target:.3f} & {sim_str} \\\\")
+    lines.extend(
+        [
+            "    \\bottomrule",
+            "  \\end{tabular}",
+            "  \\begin{minipage}{0.92\\textwidth}",
+            "    \\small\\emph{Note:} Targets are stylised literature benchmarks (Table~\\ref{tab:calibration}); simulated moments are from the burn-in path under the full model.",
+            "    Mismatch indicates the artificial economy is not tightly identified to the listed targets.",
+            "  \\end{minipage}",
+            "\\end{table}",
+        ]
+    )
+    (PAPER_DIR / "generated_calibration_fit.tex").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def run_all(n_replicates: int = 120) -> None:

@@ -32,6 +32,8 @@ def main() -> int:
         PAPER / "references.bib",
         PAPER / "generated_stats.tex",
         PAPER / "generated_results_table.tex",
+        PAPER / "generated_employment_table.tex",
+        PAPER / "generated_calibration_fit.tex",
         RESULTS / "mechanism_ladder_shock_5pct_balanced.csv",
         RESULTS / "mechanism_decomposition.csv",
         RESULTS / "summary.json",
@@ -40,9 +42,11 @@ def main() -> int:
         if not f.exists():
             errors.append(f"Missing required file: {f.relative_to(ROOT)}")
 
-    for i in range(1, 7):
-        if not (FIGURES / f"fig{i}_schematic.pdf").exists() and i == 1:
-            pass
+    for i in range(1, 8):
+        if i == 1:
+            if not (FIGURES / "fig1_schematic.pdf").exists():
+                errors.append("Missing fig1_schematic.pdf")
+            continue
         pdf = list(FIGURES.glob(f"fig{i}_*.pdf"))
         if not pdf:
             errors.append(f"Missing figure pdf for fig{i}")
