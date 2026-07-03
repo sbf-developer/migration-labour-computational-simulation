@@ -289,30 +289,27 @@ def write_latex_stats(df: pd.DataFrame, decomp: pd.DataFrame) -> None:
         "  \\caption{Native employment and unemployment after a balanced 5\\% shock}",
         "  \\label{tab:employment}",
         "  \\small",
-        "  \\begin{tabular}{@{}lcccc@{}}",
+        "  \\begin{tabular}{@{}lccc@{}}",
         "    \\toprule",
-        "    Model & Native emp.\\ (short) & Unemp.\\ (short) & Native emp.\\ (long) & Comment \\\\",
+        "    Model & Native emp.\\ (short) & Unemp.\\ (short) & Native emp.\\ (long) \\\\",
         "    \\midrule",
     ]
-    comments = {
-        0: "Severe congestion; fixed jobs",
-        1: "Demand restores matching",
-        6: "Wages up; employment drifts down over time",
-    }
     for lvl in (0, 1, 6):
         row = emp_agg[emp_agg["mechanism_level"] == lvl].iloc[0]
         emp_lines.append(
             f"    M{lvl} & {100 * row['emp_short']:.1f}\\% ({100 * 1.96 * row['emp_short_se']:.1f}) & "
             f"{100 * row['unemp_short']:.1f}\\% ({100 * 1.96 * row['unemp_short_se']:.1f}) & "
-            f"{100 * row['emp_long']:.1f}\\% ({100 * 1.96 * row['emp_long_se']:.1f}) & "
-            f"{comments[lvl]} \\\\"
+            f"{100 * row['emp_long']:.1f}\\% ({100 * 1.96 * row['emp_long_se']:.1f}) \\\\"
         )
     emp_lines.extend(
         [
             "    \\bottomrule",
             "  \\end{tabular}",
             "  \\begin{minipage}{0.92\\textwidth}",
-            "    \\small\\emph{Note:} Short run = years 0--2 after shock; long run = years 8--12. Unemployment is economy-wide. 95\\% replicate standard errors in parentheses.",
+            "    \\small\\emph{Note:} Short run = years 0--2 after shock; long run = years 8--12.",
+            "    Unemployment is economy-wide.",
+            "    \\emph{M0} reflects fixed jobs and demand (severe congestion); \\emph{M1} activates consumption demand; \\emph{M6} is the full model.",
+            "    95\\% replicate standard errors in parentheses.",
             "  \\end{minipage}",
             "\\end{table}",
         ]

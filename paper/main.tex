@@ -36,7 +36,7 @@ This paper develops a structurally transparent agent-based labour-market model a
 Calibration uses stylised aggregate moments---employment gaps, wage differentials, and migrant self-employment rates---drawn from broad patterns reported in the OECD and immigration-literature \citep{borjas2016,dustmann2013,oecd2024entrepreneurship,peri2016}.
 A balanced 5\% labour-force shock is simulated with \NReplicates{} stochastic replicates per mechanism level.
 Under \emph{M0}, the short-run native wage index changes by \MZeroShortWage{} percentage points on average (95\% interval includes zero); native employment falls to \MZeroEmpShort{}\% and economy-wide unemployment rises to \MZeroUnempShort{}\%.
-Under \emph{M6}, the wage index \emph{rises} by \MSixShortWage{} percentage points in the short run and \MSixLongWage{} percentage points in the long run (8--12 years), while short-run native employment is \MSixEmpShort{}\% and unemployment \MSixUnempShort{}\%; native employment declines gradually over the post-shock horizon (Figure~\ref{fig:paths}).
+Under \emph{M6}, the wage index \emph{rises} by \MSixShortWage{} percentage points in the short run and \MSixLongWage{} percentage points in the long run (8--12 years), while short-run native employment is \MSixEmpShort{}\% and unemployment \MSixUnempShort{}\%; native employment nonetheless declines gradually over the post-shock horizon.
 Mechanism decomposition attributes \DemandContrib{} percentage points of short-run wage change to activating local consumption demand (\emph{M0}$\rightarrow$\emph{M1}), \EntryContrib{} to firm entry (\emph{M1}$\rightarrow$\emph{M2}), and \InnovContrib{} to innovation (\emph{M5}$\rightarrow$\emph{M6}).
 The exercise does \emph{not} estimate a causal effect for any observed economy; it shows that fixed-job and dynamic general-equilibrium thought experiments can be nested within one framework, and that the \emph{sign} of wage and employment outcomes depends critically on which margins are active and on the time horizon.
 \end{abstract}
@@ -61,7 +61,7 @@ Over longer horizons, immigration may raise innovation and productivity sufficie
 
 This paper asks:
 \begin{quote}
-  \emph{Under which structural conditions does an immigration-induced labour-supply shock reduce native wages in the short run, and when do endogenous adjustments in demand, firm entry, capital, occupational specialisation, and innovation offset or reverse those effects?}
+  \emph{Under which structural conditions does an immigration-induced labour-supply shock affect native wages and employment in the short run, and when do endogenous adjustments in demand, firm entry, capital, occupational specialisation, and innovation offset or reverse those effects?}
 \end{quote}
 
 The contribution is methodological and diagnostic.
@@ -118,7 +118,7 @@ Immigrants relocate toward high-demand areas, diffusing local shocks \citep{cade
   \item \textbf{Firm dynamics:} Firm entry and capital accumulation reduce labour-market congestion (\emph{M2}, \emph{M3}).
   \item \textbf{Complementarity:} Natives in higher skill tiers have higher wage-index levels; inflow skill mix shifts aggregate outcomes only modestly under \emph{M6} (\emph{M4}).
   \item \textbf{Entrepreneurship:} Migrant entrepreneurship accelerates job creation (\emph{M5}).
-  \item \textbf{Dynamic reversal:} Average effects may shift from weakly negative in the short run to positive in the long run when innovation operates (\emph{M6}).
+  \item \textbf{Dynamic reversal:} Average wage-index effects may shift from negligible under \emph{M0} to positive in the long run when demand, firm entry, and innovation operate (\emph{M6}).
 \end{enumerate}
 
 \section{Model}
@@ -196,7 +196,7 @@ Incumbent firms exit after persistent losses; capital accumulates when utilisati
 
 \subsection{Immigration shock}
 
-After a 10-year burn-in, migrants arrive exogenously, raising the workforce by $\Delta L/L \in \{1\%,3\%,5\%,10\%\}$ with varying skill mixes at $t=10$.
+After a 10-year burn-in, migrants arrive exogenously at $t=10$, raising the workforce by $\Delta L/L \in \{1\%, 3\%, 5\%, 10\%\}$ with varying skill mixes.
 Subsequent location choices are endogenous.
 
 \section{Experimental design and calibration}
@@ -219,13 +219,15 @@ The incremental contribution of mechanism $k$ is $\Delta \bar{w}^{\text{M}_k} - 
 
 Table~\ref{tab:calibration} lists stylised calibration targets informed by published immigration and labour-market research.
 Parameters not directly identified are set by simulated-method-of-moments logic to approximate burn-in moments.
+In the current implementation, pre-shock employment rates under \emph{M6} exceed the native-employment target in Table~\ref{tab:calibration}; the artificial economy is therefore stylised rather than tightly identified.
 Hold-out validation against observed historical shocks is reserved for future work (Section~\ref{sec:limits}).
 
 \begin{table}[htbp]
   \centering
+  \small
   \caption{Stylised calibration targets (literature-informed)}
   \label{tab:calibration}
-  \begin{tabular}{lll}
+  \begin{tabular}{@{}p{0.38\textwidth}p{0.14\textwidth}p{0.36\textwidth}@{}}
     \toprule
     Moment & Target & Source \\
     \midrule
@@ -245,10 +247,17 @@ The model is implemented in Python with vectorised worker and firm arrays.
 Defaults: $N=2{,}500$ workers, $R=5$ regions, $S=3$ skill sectors, 10-year burn-in, 12-year post-shock horizon.
 Each main cell uses \NReplicates{} stochastic replicates; the research design envisions 500 replicates with global sensitivity analysis \citep{saltelli2008} as a scalability target.
 Documentation follows the ODD protocol \citep{grimm2010}.
-Code, calibration files, and result CSVs are available in the project repository accompanying this paper.
+Code, calibration files, result CSVs, and replication scripts are available at \url{https://github.com/sbf-developer/migration-labour-computational-simulation}.
 
 \section{Results}
 \label{sec:results}
+
+\subsection{Summary}
+
+Three findings organise the simulation output.
+First, under \emph{M0} (fixed jobs and demand), a 5\% immigration shock produces negligible average wage-index change but severe labour-market congestion (Table~\ref{tab:employment}).
+Second, activating demand and firm entry (\emph{M1}--\emph{M2}) accounts for most of the shift to positive wage-index changes; later mechanisms (\emph{M3}--\emph{M6}) contribute little at the aggregate level in this parameterisation.
+Third, under \emph{M6}, rising wage indices coexist with a gradual decline in native employment share over the post-shock horizon (Figure~\ref{fig:paths}), so wages and employment are not interchangeable summary statistics.
 
 \subsection{Mechanism ladder}
 
@@ -315,7 +324,7 @@ The clearest heterogeneity appears in the cross-section: low-skilled natives ear
   \label{fig:treatments}
 \end{figure}
 
-Under \emph{M6}, short-run native wage \emph{levels} (not changes) average \LowSkillShortWage{} for low skill and \HighSkillShortWage{} for high skill---a gap consistent with stronger competition in substitutable tiers \citep{dustmann2013}.
+Under \emph{M6}, short-run native wage-index \emph{levels} (normalised index, not percentage changes) average \LowSkillShortWage{} for low skill and \HighSkillShortWage{} for high skill---a cross-sectional gap consistent with stronger substitutability at the bottom of the skill distribution \citep{dustmann2013}.
 
 \begin{figure}[H]
   \centering
@@ -328,20 +337,28 @@ Under \emph{M6}, short-run native wage \emph{levels} (not changes) average \LowS
 
 \begin{table}[htbp]
   \centering
+  \small
   \caption{Hypothesis assessment}
   \label{tab:hypotheses}
-  \begin{tabular}{p{0.06\textwidth}p{0.52\textwidth}cp{0.22\textwidth}}
+  \begin{tabular}{@{}clp{0.26\textwidth}@{}}
     \toprule
-    & Hypothesis & Result & Comment \\
+    & Hypothesis & Result \\
     \midrule
-    H1 & Competition when margins fixed & Partial & \emph{M0}: $\approx$\MZeroShortWage{} pp wages; \MZeroUnempShort{}\% unemp. \\
-    H2 & Demand attenuates/reverses & Supported & \DemandContrib{} pp at \emph{M1} \\
-    H3 & Firm/capital reduces congestion & Partial & Positive increment; noisy \\
-    H4 & Complementary natives fare better & Partial & Cross-section skill gradient (Fig.~\ref{fig:skill}); weak treatment variation \\
-    H5 & Migrant entrepreneurship & Partial & M5 increment $\approx 0$ pp \\
-    H6 & Long-run reversal & Supported & \MZeroLongWage{} $\rightarrow$ \MSixLongWage{} pp \\
+    H1 & Competition when margins fixed & Partial \\
+    H2 & Demand attenuates/reverses wage effects & Supported \\
+    H3 & Firm/capital reduces congestion & Partial \\
+    H4 & Complementary natives fare better & Partial \\
+    H5 & Migrant entrepreneurship & Partial \\
+    H6 & Long-run wage reversal under \emph{M6} & Supported \\
     \bottomrule
   \end{tabular}
+  \begin{minipage}{0.95\textwidth}
+    \small\emph{Notes:} H1: \emph{M0} $\approx$ \MZeroShortWage{} pp wages, \MZeroUnempShort{}\% unemployment.
+    H2: \DemandContrib{} pp at \emph{M1}.
+    H3--H5: positive or negligible incremental effects; M5 $\approx 0$ pp.
+    H4: skill gradient in levels (Figure~\ref{fig:skill}); weak treatment variation.
+    H6: \MZeroLongWage{} $\rightarrow$ \MSixLongWage{} pp (long run).
+  \end{minipage}
 \end{table}
 
 \section{Limitations and scope of inference}
@@ -360,8 +377,9 @@ Under \emph{M6}, short-run native wage \emph{levels} (not changes) average \LowS
   \item Positive long-run wage effects under \emph{M6} may partly reflect stylised demand and innovation parameters rather than empirically identified magnitudes; the \emph{M0}$\rightarrow$\emph{M1} step is especially large and may be miscalibrated.
   \item Under \emph{M6}, native employment share declines over the post-shock horizon even when the wage index rises; readers should not equate higher wages with unambiguous labour-market gains for natives.
   \item Welfare institutions, collective bargaining, language policy, and housing supply are omitted.
-  \item The model is not validated on a hold-out historical shock with pre-registered outcomes.
+  \item Burn-in moments need not match Table~\ref{tab:calibration} exactly; pre-shock employment under \emph{M6} is higher than the listed native-employment target.
   \item Task specialisation (\emph{M4}) and migrant entrepreneurship (\emph{M5}) contribute negligibly to the aggregate wage index in this implementation; firm entry and demand activation dominate.
+  \item The model is not validated on a hold-out historical shock with pre-registered outcomes.
   \item Global sensitivity analysis and 500-replicate robustness are design targets not yet fully executed at scale.
 \end{enumerate}
 
@@ -375,15 +393,19 @@ They do \emph{not} license a blanket claim that immigration raises wages in any 
 Immigration economics produces different answers because the underlying thought experiments differ.
 This paper makes those differences explicit through a nested agent-based model in an artificial economy.
 When only labour supply expands (\emph{M0}), native wage indices are essentially unchanged in the short run but unemployment rises sharply because jobs and demand are fixed.
-When migrants consume locally, firms enter, capital adjusts, natives specialise, migrants entrepreneur, and innovation responds (\emph{M6}), the same shock produces rising wage-index trajectories alongside a gradual decline in native employment share.
+When migrants consume locally, firms enter, capital adjusts, natives specialise, migrant entrepreneurship operates, and innovation responds (\emph{M6}), the same shock produces rising wage-index trajectories alongside a gradual decline in native employment share.
 
 The contribution is a map from structural assumptions to signed outcomes across horizons and worker types---not a single definitive sign on ``the'' immigration effect.
 Future work should embed microdata from a specific economy, validate on identified historical shocks, and conduct full sensitivity analysis at scale.
 
-\section*{Replication}
+\section*{Replication and code availability}
 \noindent
-Run \texttt{python run\_experiment.py --replicates 50} followed by \texttt{python generate\_paper\_outputs.py} to regenerate figures, tables, and \texttt{paper/generated\_stats.tex}.
-Compile with \texttt{pdflatex} and \texttt{bibtex} in \texttt{paper/}.
+Source code, calibration targets, result CSVs, and figure scripts are archived at\\
+\url{https://github.com/sbf-developer/migration-labour-computational-simulation}.
+
+\smallskip\noindent
+To reproduce the reported statistics and figures, run \texttt{python run\_experiment.py --replicates 50} followed by \texttt{python generate\_paper\_outputs.py}, then compile with \texttt{pdflatex} and \texttt{bibtex} in \texttt{paper/}.
+All numerical values in Tables~\ref{tab:results}--\ref{tab:hypotheses} and the abstract are auto-generated from \texttt{results/mechanism\_ladder\_shock\_5pct\_balanced.csv}.
 
 \bibliography{references}
 
